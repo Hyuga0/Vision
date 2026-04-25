@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISION | Premium Vibrant Eyewear</title>
+    <link rel="shortcut icon" href="Vision.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+        
+        :root {
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .bg-vibrant {
+            background: var(--accent-gradient);
+        }
+
+        .text-gradient {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .page-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .nav-scrolled {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        .product-card-hover:hover .product-image {
+            transform: scale(1.1);
+        }
+
+        /* Cart Sidebar Animation */
+        #cart-sidebar {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        #cart-overlay {
+            transition: opacity 0.4s ease;
+        }
+
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d1d1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a855f7;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 selection:bg-purple-500 selection:text-white">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-500 py-6">
+        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
+            <button onclick="navigateTo('home')" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-vibrant rounded-xl flex items-center justify-center text-white shadow-lg shadow-purple-500/30 group-hover:rotate-12 transition-transform">
+                    <i data-lucide="eye" class="w-6 h-6"></i>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tighter">VISION</span>
+            </button>
+            
+            <div class="hidden md:flex items-center gap-10 text-sm font-bold uppercase tracking-widest text-slate-500">
+                <button onclick="navigateTo('home')" class="nav-link hover:text-purple-600 transition-colors relative group" data-page="home">
+                    Home
+                    <span class="nav-indicator absolute -bottom-2 left-0 w-full h-1 bg-vibrant rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                </button>
+                <button onclick="navigateTo('shop')" class="nav-link hover:text-purple-600 transition-colors relative group" data-page="shop">
+                    Shop
+                    <span class="nav-indicator absolute -bottom-2 left-0 w-full h-1 bg-vibrant rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                </button>
+                <button onclick="navigateTo('about')" class="nav-link hover:text-purple-600 transition-colors relative group" data-page="about">
+                    About
+                    <span class="nav-indicator absolute -bottom-2 left-0 w-full h-1 bg-vibrant rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                </button>
+                <button onclick="navigateTo('contact')" class="nav-link hover:text-purple-600 transition-colors relative group" data-page="contact">
+                    Contact
+                    <span class="nav-indicator absolute -bottom-2 left-0 w-full h-1 bg-vibrant rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex items-center bg-white/50 border border-slate-200 rounded-full px-4 py-2 focus-within:border-purple-400 transition-all">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                    <input type="text" placeholder="Search style..." class="bg-transparent border-none outline-none text-xs ml-2 w-24">
+                </div>
+                <button onclick="toggleCart()" class="relative p-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all group">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 group-hover:text-purple-600"></i>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-vibrant text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-900"><i data-lucide="menu" class="w-6 h-6"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white z-[60] hidden flex-col p-8 transition-all duration-500">
+        <div class="flex justify-between items-center mb-16">
+            <span class="text-3xl font-black text-gradient">VISION</span>
+            <button onclick="toggleMobileMenu()" class="p-2 bg-slate-100 rounded-full"><i data-lucide="x" class="w-8 h-8"></i></button>
+        </div>
+        <div class="flex flex-col gap-6">
+            <button onclick="navigateTo('home')" class="text-5xl font-extrabold text-left hover:text-purple-600 transition-colors">HOME</button>
+            <button onclick="navigateTo('shop')" class="text-5xl font-extrabold text-left hover:text-purple-600 transition-colors">SHOP</button>
+            <button onclick="navigateTo('about')" class="text-5xl font-extrabold text-left hover:text-purple-600 transition-colors">ABOUT</button>
+            <button onclick="navigateTo('contact')" class="text-5xl font-extrabold text-left hover:text-purple-600 transition-colors">CONTACT</button>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[70] hidden opacity-0 transition-opacity" onclick="toggleCart()"></div>
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-[80] shadow-2xl translate-x-full flex flex-col">
+        <div class="p-8 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="text-2xl font-black">Your Cart</h2>
+            <button onclick="toggleCart()" class="p-2 hover:bg-slate-100 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+        </div>
+        
+        <div id="cart-items-container" class="flex-grow overflow-y-auto p-8 space-y-6">
+            <!-- Injected via JS -->
+            <div class="flex flex-col items-center justify-center h-full text-center text-slate-400">
+                <i data-lucide="shopping-bag" class="w-16 h-16 mb-4 opacity-20"></i>
+                <p class="font-bold">Your cart is empty</p>
+                <button onclick="toggleCart(); navigateTo('shop')" class="mt-4 text-purple-600 font-bold hover:underline">Go Shopping</button>
+            </div>
+        </div>
+
+        <div class="p-8 bg-slate-50 border-t border-slate-100">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-slate-500 font-bold uppercase tracking-widest text-xs">Subtotal</span>
+                <span id="cart-total" class="text-2xl font-black text-purple-600">$0.00</span>
+            </div>
+            <button class="w-full bg-vibrant text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-purple-500/20">Checkout Now</button>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <main>
+        <!-- HOME -->
+        <section id="home" class="page-section active">
+            <!-- Hero -->
+            <div class="relative min-h-screen flex items-center overflow-hidden bg-slate-900">
+                <div class="absolute inset-0 z-0">
+                    <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=2000" alt="Fashion Hero" class="w-full h-full object-cover opacity-40">
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-transparent"></div>
+                </div>
+                
+                <div class="relative z-10 max-w-7xl mx-auto px-6 w-full">
+                    <div class="max-w-3xl">
+                        <span class="inline-block px-4 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-widest mb-6 border border-purple-500/30">New 2024 Drop</span>
+                        <h1 class="text-6xl md:text-8xl font-black text-white leading-tight mb-8">
+                            Style That <span class="text-gradient">Speaks</span> Volumes
+                        </h1>
+                        <p class="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-xl">
+                            Unapologetic designs for the bold. Experience the ultimate fusion of vibrant aesthetics and high-definition clarity.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="navigateTo('shop')" class="px-10 py-5 bg-vibrant text-white rounded-2xl font-bold flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-purple-500/25 group">
+                                Shop Collection <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                            </button>
+                            <button class="px-10 py-5 bg-white/10 backdrop-blur-md text-white rounded-2xl font-bold hover:bg-white/20 transition-all border border-white/20">
+                                Watch Film
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats/Features -->
+            <section class="py-20 bg-white">
+                <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div>
+                        <div class="text-4xl font-black text-gradient mb-2">30+</div>
+                        <p class="text-sm font-bold text-slate-400 uppercase tracking-tighter">Exclusive Frames</p>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-black text-gradient mb-2">100%</div>
+                        <p class="text-sm font-bold text-slate-400 uppercase tracking-tighter">UV Protection</p>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-black text-gradient mb-2">24h</div>
+                        <p class="text-sm font-bold text-slate-400 uppercase tracking-tighter">Global Delivery</p>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-black text-gradient mb-2">5★</div>
+                        <p class="text-sm font-bold text-slate-400 uppercase tracking-tighter">User Experience</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Collection -->
+            <section class="py-32 px-6 max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-16">
+                    <div>
+                        <h2 class="text-5xl font-black mb-4">Summer <span class="font-serif italic text-purple-600">Faves</span></h2>
+                        <p class="text-slate-500 text-lg">Hand-picked styles for the brightest days.</p>
+                    </div>
+                    <button onclick="navigateTo('shop')" class="mt-6 md:mt-0 px-8 py-3 rounded-full border-2 border-slate-200 font-bold hover:border-purple-500 hover:text-purple-600 transition-all">View All Designs</button>
+                </div>
+                <div id="featured-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Injected via JS -->
+                </div>
+            </section>
+        </section>
+
+        <!-- SHOP -->
+        <section id="shop" class="page-section pt-32 pb-20 px-6 max-w-7xl mx-auto">
+            <div class="relative mb-20 rounded-[3rem] overflow-hidden p-12 md:p-20 text-white bg-slate-900">
+                <img src="https://plus.unsplash.com/premium_photo-1661319134179-50e9552b63c0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGV5ZXdlYXJ8ZW58MHx8MHx8fDA%3D" class="absolute inset-0 w-full h-full object-cover opacity-50" alt="Shop Hero">
+                <div class="relative z-10 max-w-2xl">
+                    <h2 class="text-5xl md:text-7xl font-black mb-6">The Vault</h2>
+                    <p class="text-xl text-slate-300">Browse our complete collection of 30 premium frames. Crafted for comfort, styled for impact.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between mb-12 gap-8">
+                <div class="flex items-center gap-3 overflow-x-auto no-scrollbar py-2">
+                    <button onclick="filterShop('All')" class="filter-btn active whitespace-nowrap px-8 py-3 rounded-2xl bg-vibrant text-white font-bold shadow-lg shadow-purple-500/20 transition-all">All Collections</button>
+                    <button onclick="filterShop('Luxury')" class="filter-btn whitespace-nowrap px-8 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 font-bold hover:border-purple-400 transition-all">Luxury</button>
+                    <button onclick="filterShop('Modern')" class="filter-btn whitespace-nowrap px-8 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 font-bold hover:border-purple-400 transition-all">Modern</button>
+                    <button onclick="filterShop('Sport')" class="filter-btn whitespace-nowrap px-8 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 font-bold hover:border-purple-400 transition-all">Sport</button>
+                    <button onclick="filterShop('Classic')" class="filter-btn whitespace-nowrap px-8 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 font-bold hover:border-purple-400 transition-all">Classic</button>
+                </div>
+                <div class="text-sm font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-4 py-2 rounded-lg">
+                    <span id="inventory-count">30</span> Frames available
+                </div>
+            </div>
+
+            <div id="shop-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- ABOUT -->
+        <section id="about" class="page-section pt-32 pb-20">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid lg:grid-cols-2 gap-20 items-center mb-32">
+                    <div class="relative">
+                        <div class="absolute -top-10 -left-10 w-40 h-40 bg-purple-200 rounded-full blur-3xl opacity-50"></div>
+                        <img src="https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=1000" alt="Craftsmanship" class="rounded-[3rem] shadow-2xl relative z-10">
+                    </div>
+                    <div>
+                        <span class="text-purple-600 font-black uppercase tracking-[0.3em] text-xs mb-4 block">Our Heritage</span>
+                        <h2 class="text-5xl md:text-7xl font-black mb-8 leading-tight">Beyond <br><span class="text-gradient italic font-serif">the Lens</span></h2>
+                        <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                            Vision was born in 2024 from a simple obsession: why should eyewear be boring? We believe your shades are the most critical accessory in your arsenal. They are the filter through which you see the world, and the window through which the world sees your style.
+                        </p>
+                        <p class="text-lg text-slate-600 mb-10 leading-relaxed">
+                            Our team of designers in Chandigarh crafts each frame with aerospace-grade titanium and eco-conscious acetate, ensuring a feather-light feel without compromising on strength.
+                        </p>
+                        <div class="grid grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-black text-2xl mb-2">Sustainable</h4>
+                                <p class="text-slate-400 text-sm">Bio-acetate materials</p>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-2xl mb-2">Precision</h4>
+                                <p class="text-slate-400 text-sm">German-engineered hinges</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="page-section pt-32 pb-20 px-6">
+            <div class="max-w-7xl mx-auto bg-vibrant rounded-[4rem] p-12 md:p-24 text-white flex flex-col md:flex-row gap-20 items-center overflow-hidden relative">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                <div class="relative z-10 flex-1">
+                    <h2 class="text-5xl md:text-7xl font-black mb-8">Let's <br>Connect.</h2>
+                    <p class="text-purple-100 text-lg mb-12 max-w-md leading-relaxed">Have a question about a frame? Our style consultants are ready to assist you in finding your perfect fit.</p>
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-6">
+                            <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center"><i data-lucide="mail"></i></div>
+                            <div>
+                                <p class="text-purple-200 text-sm">Email us</p>
+                                <p class="font-bold">hello@vision.design</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center"><i data-lucide="phone"></i></div>
+                            <div>
+                                <p class="text-purple-200 text-sm">Call us</p>
+                                <p class="font-bold">+91 98765-43210</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative z-10 flex-1 w-full bg-white/10 backdrop-blur-xl p-8 md:p-12 rounded-[3rem] border border-white/20">
+                    <form onsubmit="event.preventDefault();" class="space-y-6">
+                        <input type="text" placeholder="Your Name" class="w-full bg-white/10 border border-white/30 rounded-2xl p-4 text-white placeholder:text-white/60 outline-none focus:bg-white/20 transition-all">
+                        <input type="email" placeholder="Your Email" class="w-full bg-white/10 border border-white/30 rounded-2xl p-4 text-white placeholder:text-white/60 outline-none focus:bg-white/20 transition-all">
+                        <textarea placeholder="How can we help?" rows="4" class="w-full bg-white/10 border border-white/30 rounded-2xl p-4 text-white placeholder:text-white/60 outline-none focus:bg-white/20 transition-all resize-none"></textarea>
+                        <button class="w-full bg-white text-purple-600 py-5 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-50 pt-32 pb-16 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-32">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-8">
+                        <div class="w-8 h-8 bg-vibrant rounded-lg flex items-center justify-center text-white"><i data-lucide="eye" class="w-4 h-4"></i></div>
+                        <span class="text-xl font-black">VISION</span>
+                    </div>
+                    <p class="text-slate-400 leading-relaxed mb-8">Reimagining eyewear for the digital age. Designed in Chandigarh, worn everywhere.</p>
+                    <div class="flex gap-4">
+                        <button class="w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></button>
+                        <button class="w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></button>
+                        <button class="w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></button>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="font-black uppercase tracking-widest text-xs mb-8">Discover</h5>
+                    <ul class="space-y-4 text-slate-500 font-medium">
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">New Arrivals</a></li>
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">Bestsellers</a></li>
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">Limited Edition</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-black uppercase tracking-widest text-xs mb-8">Information</h5>
+                    <ul class="space-y-4 text-slate-500 font-medium">
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">Shipping Policy</a></li>
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">Sustainability</a></li>
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">Career</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-black uppercase tracking-widest text-xs mb-8">Newsletter</h5>
+                    <p class="text-slate-400 text-sm mb-6">Unlock early access to drops.</p>
+                    <div class="flex p-1 bg-white border border-slate-200 rounded-2xl">
+                        <input type="email" placeholder="email@example.com" class="bg-transparent border-none outline-none px-4 py-2 w-full text-sm">
+                        <button class="bg-vibrant text-white px-6 py-2 rounded-xl text-sm font-bold">Join</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salamjot Singh Developer Card -->
+            <div class="flex flex-col items-center">
+                <div class="w-full max-w-2xl bg-white border border-slate-200 rounded-[3rem] p-8 md:p-10 shadow-2xl shadow-purple-500/5 flex flex-col md:flex-row items-center gap-8 group hover:border-purple-300 transition-all">
+                    <div class="relative">
+                        <div class="w-28 h-28 rounded-full bg-vibrant p-1 flex items-center justify-center group-hover:rotate-6 transition-transform">
+                            <div class="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center text-slate-300">
+                                <img src="Developer.png" alt="Salamjot Singh" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 border-4 border-white rounded-full"></div>
+                    </div>
+                    <div class="text-center md:text-left">
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
+                            <h4 class="text-2xl font-black">Salamjot Singh</h4>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-600 text-[10px] font-black rounded-full uppercase">Lead Designer</span>
+                        </div>
+                        <p class="text-slate-500 font-semibold mb-4 leading-relaxed">
+                            Student at DAV-10 Chandigarh, PGDCA, Panjab University.
+                        </p>
+                        <div class="flex items-center justify-center md:justify-start gap-6">
+                            <a href="#" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-purple-600 transition-colors"><i data-lucide="github" class="w-4 h-4"></i> GitHub</a>
+                            <a href="#" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-purple-600 transition-colors"><i data-lucide="globe" class="w-4 h-4"></i> Portfolio</a>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-16 text-[10px] font-black text-slate-300 uppercase tracking-[0.5em]">Vision Design Lab • 2024</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll Top -->
+    <button id="scrollTop" class="fixed bottom-8 right-8 w-14 h-14 bg-vibrant text-white rounded-2xl shadow-2xl flex items-center justify-center opacity-0 invisible transition-all hover:scale-110 z-40">
+        <i data-lucide="chevron-up" class="w-6 h-6"></i>
+    </button>
+
+    <script>
+        // High quality stock photos
+        const stockPhotos = [
+            "https://images.unsplash.com/photo-1711564356104-2c2961efcc38?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTA3fHxleWV3ZWFyfGVufDB8fDB8fHww",
+            "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1619089661769-3101dbac9257?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTA2fHxleWV3ZWFyfGVufDB8fDB8fHww",
+            "https://images.unsplash.com/photo-1509695507497-903c140c43b0?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZXlld2VhcnxlbnwwfHwwfHx8MA%3D%3D"
+        ];
+
+        const framesData = Array.from({ length: 30 }, (_, i) => {
+            const categories = ["Luxury", "Modern", "Sport", "Classic"];
+            return {
+                id: i + 1,
+                name: `Vision ${['X', 'Alpha', 'Pro', 'Elite', 'Aura', 'Stealth'][i % 6]} ${i + 1}`,
+                price: Math.floor(Math.random() * (500 - 150) + 150),
+                category: categories[i % categories.length],
+                style: ["Aviator", "Wayfarer", "Round", "Cat Eye", "Geometric", "Square"][i % 6],
+                color: ["Amber", "Pitch Black", "Electric Blue", "Tortoise", "Rose Gold", "Frost Silver"][i % 6],
+                rating: (4 + Math.random()).toFixed(1),
+                image: stockPhotos[i % stockPhotos.length]
+            };
+        });
+
+        // Cart State
+        let cartItems = [];
+
+        function init() {
+            lucide.createIcons();
+            renderGrid('shop-grid', framesData);
+            renderGrid('featured-grid', framesData.slice(0, 4));
+            window.addEventListener('scroll', handleScroll);
+            document.getElementById('scrollTop').onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function handleScroll() {
+            const nav = document.getElementById('navbar');
+            const topBtn = document.getElementById('scrollTop');
+            if (window.scrollY > 50) {
+                nav.classList.add('nav-scrolled');
+                topBtn.classList.remove('opacity-0', 'invisible');
+                topBtn.classList.add('opacity-100', 'visible');
+            } else {
+                nav.classList.remove('nav-scrolled');
+                topBtn.classList.add('opacity-0', 'invisible');
+                topBtn.classList.remove('opacity-100', 'visible');
+            }
+        }
+
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const ind = link.querySelector('.nav-indicator');
+                if(link.dataset.page === pageId) {
+                    ind.classList.remove('scale-x-0');
+                    ind.classList.add('scale-x-100');
+                    link.classList.add('text-purple-600');
+                } else {
+                    ind.classList.add('scale-x-0');
+                    ind.classList.remove('scale-x-100');
+                    link.classList.remove('text-purple-600');
+                }
+            });
+
+            if (!document.getElementById('mobile-menu').classList.contains('hidden')) toggleMobileMenu();
+            window.scrollTo(0, 0);
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+            document.body.style.overflow = menu.classList.contains('hidden') ? 'auto' : 'hidden';
+        }
+
+        // Cart Functions
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            const isOpen = sidebar.classList.contains('translate-x-0');
+
+            if (isOpen) {
+                sidebar.classList.add('translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                overlay.classList.add('hidden', 'opacity-0');
+                document.body.style.overflow = 'auto';
+            } else {
+                sidebar.classList.remove('translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function addToCart(productId) {
+            const product = framesData.find(f => f.id === productId);
+            const existing = cartItems.find(item => item.id === productId);
+
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cartItems.push({ ...product, quantity: 1 });
+            }
+
+            updateCartUI();
+            
+            // Show feedback on badge
+            const badge = document.getElementById('cart-count');
+            badge.classList.add('scale-125', 'bg-pink-500');
+            setTimeout(() => badge.classList.remove('scale-125', 'bg-pink-500'), 300);
+
+            // Open cart to show user
+            if (!document.getElementById('cart-sidebar').classList.contains('translate-x-0')) {
+                toggleCart();
+            }
+        }
+
+        function updateQuantity(id, delta) {
+            const item = cartItems.find(i => i.id === id);
+            if (!item) return;
+
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cartItems = cartItems.filter(i => i.id !== id);
+            }
+            updateCartUI();
+        }
+
+        function removeFromCart(id) {
+            cartItems = cartItems.filter(i => i.id !== id);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const totalEl = document.getElementById('cart-total');
+            const countEl = document.getElementById('cart-count');
+
+            const totalCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+            const totalPrice = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+            countEl.innerText = totalCount;
+            totalEl.innerText = `$${totalPrice.toFixed(2)}`;
+
+            if (cartItems.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-center text-slate-400 animate-in fade-in zoom-in duration-300">
+                        <i data-lucide="shopping-bag" class="w-16 h-16 mb-4 opacity-20"></i>
+                        <p class="font-bold">Your cart is empty</p>
+                        <button onclick="toggleCart(); navigateTo('shop')" class="mt-4 text-purple-600 font-bold hover:underline">Go Shopping</button>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = cartItems.map(item => `
+                <div class="flex gap-4 group animate-in slide-in-from-right-4 duration-300">
+                    <div class="w-24 h-24 bg-slate-50 rounded-2xl p-2 flex-shrink-0 border border-slate-100">
+                        <img src="${item.image}" class="w-full h-full object-contain">
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold text-sm truncate w-32">${item.name}</h4>
+                            <button onclick="removeFromCart(${item.id})" class="text-slate-300 hover:text-red-500 transition-colors">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">${item.color} • ${item.style}</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center bg-slate-100 rounded-lg p-1">
+                                <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center hover:bg-white rounded-md transition-all text-slate-600">
+                                    <i data-lucide="minus" class="w-3 h-3"></i>
+                                </button>
+                                <span class="w-8 text-center text-xs font-black">${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center hover:bg-white rounded-md transition-all text-slate-600">
+                                    <i data-lucide="plus" class="w-3 h-3"></i>
+                                </button>
+                            </div>
+                            <span class="font-black text-purple-600">$${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function filterShop(cat) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.innerText.includes(cat)) {
+                    btn.className = 'filter-btn whitespace-nowrap px-8 py-3 rounded-2xl bg-vibrant text-white font-bold shadow-lg shadow-purple-500/20 transition-all';
+                } else {
+                    btn.className = 'filter-btn whitespace-nowrap px-8 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 font-bold hover:border-purple-400 transition-all';
+                }
+            });
+
+            const filtered = cat === 'All' ? framesData : framesData.filter(f => f.category === cat);
+            renderGrid('shop-grid', filtered);
+            document.getElementById('inventory-count').innerText = filtered.length;
+        }
+
+        function renderGrid(containerId, data) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'group product-card-hover';
+                card.innerHTML = `
+                    <div class="relative aspect-square bg-white rounded-[2.5rem] overflow-hidden mb-6 shadow-sm border border-slate-100 p-8">
+                        <img src="${item.image}" alt="${item.name}" class="product-image w-full h-full object-contain transition-transform duration-700">
+                        <div class="absolute top-6 left-6 flex flex-col gap-2">
+                            ${item.rating > 4.8 ? '<span class="bg-vibrant text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Bestseller</span>' : ''}
+                            <span class="bg-slate-100 text-slate-500 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">${item.category}</span>
+                        </div>
+                        <div class="absolute inset-0 bg-purple-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button onclick="addToCart(${item.id})" class="px-8 py-3 bg-white text-black rounded-2xl font-black shadow-2xl translate-y-4 group-hover:translate-y-0 transition-transform">Quick Add</button>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-end px-2">
+                        <div>
+                            <h4 class="font-black text-xl mb-1">${item.name}</h4>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">${item.style} • ${item.color}</p>
+                        </div>
+                        <p class="text-2xl font-black text-purple-600">$${item.price}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
